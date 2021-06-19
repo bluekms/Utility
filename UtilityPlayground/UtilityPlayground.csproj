@@ -28,6 +28,7 @@
 
 	<ItemGroup>
 	  <ProjectReference Include="..\UtilityLib\UtilityLib.csproj" />
+	  <ProjectReference Include="..\UtilityTester\UtilityTester.csproj" />
 	</ItemGroup>
 
 </Project>
