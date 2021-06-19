@@ -7,9 +7,9 @@ namespace Utility
 {
     public class RandomSelector<T>
     {
-        private Random rand;
-        private List<T> itemList;
-        private List<double> ratioList;
+        private readonly Random rand;
+        private readonly List<T> itemList;
+        private readonly List<double> ratioList;
 
         public int Count
         {
@@ -19,7 +19,7 @@ namespace Utility
         public override string ToString()
         {
             var sb = new StringBuilder();
-            for (var i = 0; i < itemList.Count; ++i)
+            for (int i = 0; i < itemList.Count; ++i)
             {
                 sb.AppendLine($"{itemList[i]} : {ratioList[i]}");
             }
@@ -90,7 +90,7 @@ namespace Utility
             }
 
             int index = GetRandomIndex();
-            T item = itemList[index];
+            var item = itemList[index];
 
             itemList.RemoveAt(index);
             ratioList.RemoveAt(index);
