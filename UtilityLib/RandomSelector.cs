@@ -8,8 +8,8 @@ namespace Utility
     public class RandomSelector<T>
     {
         private Random rand;
-        private List<T> itemList = new List<T>();
-        private List<double> ratioList = new List<double>();
+        private List<T> itemList;
+        private List<double> ratioList;
 
         public override string ToString()
         {
@@ -25,6 +25,8 @@ namespace Utility
         public RandomSelector(Random r)
         {
             rand = r;
+            itemList = new List<T>();
+            ratioList = new List<double>();
         }
 
         public RandomSelector(RandomSelector<T> src)
@@ -35,8 +37,8 @@ namespace Utility
             }
 
             rand = src.rand;
-            itemList = src.itemList;
-            ratioList = src.ratioList;
+            itemList = new(src.itemList);
+            ratioList = new(src.ratioList);
         }
 
         public void Add(T item, double ratio)
