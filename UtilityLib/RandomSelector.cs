@@ -29,6 +29,13 @@ namespace Utility
             ratioList = new List<double>();
         }
 
+        public RandomSelector(Random r, int capacity)
+        {
+            rand = r;
+            itemList = new List<T>(capacity);
+            ratioList = new List<double>(capacity);
+        }
+
         public RandomSelector(RandomSelector<T> src)
         {
             if (src == null)
