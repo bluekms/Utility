@@ -12,10 +12,6 @@
     <WarningsAsErrors />
   </PropertyGroup>
 
-  <ItemGroup>
-    <AdditionalFiles Include="﻿stylecop.json" />
-  </ItemGroup>
-
 	<ItemGroup>
 		<PackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" Version="5.0.3">
 			<PrivateAssets>all</PrivateAssets>
