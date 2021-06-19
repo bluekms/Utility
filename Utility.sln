@@ -5,9 +5,14 @@ VisualStudioVersion = 16.0.31410.357
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilityLib", "UtilityLib\UtilityLib.csproj", "{EB359BCE-EC3A-40BE-9C19-7FFD38E456C8}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilityPlayground", "UtilityPlayground\UtilityPlayground.csproj", "{F1BD9114-4F97-417A-8E76-8F9010175137}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilityPlayground", "UtilityPlayground\UtilityPlayground.csproj", "{F1BD9114-4F97-417A-8E76-8F9010175137}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "UtilityTester", "UtilityTester\UtilityTester.csproj", "{DCC8AF5A-0CFB-42BC-B383-4658DB551700}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "UtilityTester", "UtilityTester\UtilityTester.csproj", "{DCC8AF5A-0CFB-42BC-B383-4658DB551700}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{64136E25-FF6F-4AF3-A4BE-7EA4BBF892B0}"
+	ProjectSection(SolutionItems) = preProject
+		.editorconfig = .editorconfig
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
