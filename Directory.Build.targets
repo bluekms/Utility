@@ -6,6 +6,6 @@
 			<MissingPackages Include="@(RequirePackageReference)" Exclude="@(PackageReference)" />
 		</ItemGroup>
 
-		<Error Condition="@(MissingPackages) != ''" Text="Missing RequiredPackageReference: @(MissingPackages)" />
+		<!--<Error Condition="@(MissingPackages) != ''" Text="Missing RequiredPackageReference: @(MissingPackages)" />-->
 	</Target>
 </Project>
