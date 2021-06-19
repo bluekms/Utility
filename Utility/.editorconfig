@@ -39,13 +39,14 @@ dotnet_code_quality.CA1822.api_surface = private, internal
 # Missing XML comment for publicly visible type or member 'Type_or_Member'
 dotnet_diagnostic.CS1591.severity = silent
 
+# Prefix local calls with this
+dotnet_diagnostic.SA1101.severity = silent
+
+# ElementsMustAppearInTheCorrectOrder
+dotnet_diagnostic.SA1201.severity = none
+
 # Elements should be documented
 dotnet_diagnostic.SA1600.severity = silent
 
 # File Must Have Header
 dotnet_diagnostic.SA1633.severity = none
-insert_final_newline=true
-csharp_space_around_binary_operators=ignore
-csharp_space_between_method_declaration_name_and_open_parenthesis=false
-[*.{cs,vb}]
-end_of_line=lf
