@@ -11,6 +11,11 @@ namespace Utility
         private List<T> itemList;
         private List<double> ratioList;
 
+        public int Count
+        {
+            get { return itemList.Count; }
+        }
+
         public override string ToString()
         {
             var sb = new StringBuilder();
@@ -44,8 +49,8 @@ namespace Utility
             }
 
             rand = src.rand;
-            itemList = new(src.itemList);
-            ratioList = new(src.ratioList);
+            itemList = new List<T>(src.itemList);
+            ratioList = new List<double>(src.ratioList);
         }
 
         public void Add(T item, double ratio)

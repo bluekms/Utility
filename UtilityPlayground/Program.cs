@@ -17,11 +17,21 @@ namespace UtilityPlayground
         {
             return Name == other.Name && Age == other.Age;
         }
+
+        public override bool Equals(object obj)
+        {
+            return Equals(obj as Human);
+        }
+
+        public override int GetHashCode()
+        {
+            throw new NotImplementedException();
+        }
     }
 
-    class Program
+    internal class Program
     {
-        static void Main(string[] args)
+        private static void Main(string[] args)
         {
             var rand = new Random(Guid.NewGuid().GetHashCode());
 
