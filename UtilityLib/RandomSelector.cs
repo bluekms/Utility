@@ -29,6 +29,11 @@ namespace Utility
 
         public RandomSelector(RandomSelector<T> src)
         {
+            if (src == null)
+            {
+                throw new ArgumentNullException(nameof(src));
+            }
+
             rand = src.rand;
             itemList = src.itemList;
             ratioList = src.ratioList;

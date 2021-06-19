@@ -1,0 +1,11 @@
+<Project>
+	<!-- RequirePackageReference 가 하나라도 프로젝트에서 빠지면 에러내기 -->
+	<Target Name="CheckRequirePackageReferences"
+          AfterTargets="CollectPackageReferences">
+		<ItemGroup>
+			<MissingPackages Include="@(RequirePackageReference)" Exclude="@(PackageReference)" />
+		</ItemGroup>
+
+		<Error Condition="@(MissingPackages) != ''" Text="Missing RequiredPackageReference: @(MissingPackages)" />
+	</Target>
+</Project>
