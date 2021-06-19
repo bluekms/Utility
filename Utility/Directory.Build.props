@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <Features>strict</Features>
+    <Deterministic>true</Deterministic>
+    <AnalysisMode>Recommended</AnalysisMode>
+  </PropertyGroup>
+
+  <ItemGroup Label="Required package references">
+    <RequirePackageReference Include="Microsoft.CodeAnalysis.NetAnalyzers" />
+    <RequirePackageReference Include="StyleCop.Analyzers" />
+  </ItemGroup>
+
+	<PropertyGroup Label="Xml comment analysis">
+		<GenerateDocumentationFile>True</GenerateDocumentationFile>
+	</PropertyGroup>
+	<ItemGroup>
+		<AdditionalFiles Include="$(MSBuildThisFileDirectory)\stylecop.json">
+			<Link>stylecop.json</Link>
+		</AdditionalFiles>
+	</ItemGroup>
+</Project>
