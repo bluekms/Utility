@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Utility;
 using UtilityTester;
 
@@ -8,48 +9,58 @@ namespace UtilityPlayground
     {
         private static void Main()
         {
-            // var rand = new Random(Guid.NewGuid().GetHashCode());
-            // var rs = new RandomSelector<Human>(rand);
-            // rs.Add(new Human { Name = "aaa", Age = 10 }, 100);
-            // rs.Add(new Human { Name = "aaa", Age = 10 }, 0.1);
-            // rs.Add(new Human { Name = "bbb", Age = 10 }, 0.1);
-            // rs.Add(new Human { Name = "ccc", Age = 10 }, 0.1);
-            // Console.WriteLine(rs);
-            // Console.WriteLine();
-            // var rs2 = new RandomSelector<Human>(rs);
-            // Console.WriteLine(rs2.Pick());
-            // Console.WriteLine();
-            // Console.WriteLine(nameof(rs));
-            // Console.WriteLine(rs);
-            // Console.WriteLine();
-            // Console.WriteLine(nameof(rs2));
-            // Console.WriteLine(rs2);
+            // star  | percent | count | probability
+            //     5 |     0.9 |    10 |    0.09
+            //     4 |     4.1 |    40 |    0.1025
+            //     3 |      35 |   100 |    0.35
+            //     2 |      35 |   150 |    0.23333
+            //     1 |      25 |   200 |    0.125
+            // total |     100 |   500 |    0.2
 
-            int addCount = 100;
+            double[] percent = { 25, 35, 35, 4.1, 0.9 };
+            double[] count = { 200, 150, 100, 40, 10 };
+            double[] probability =
+            {
+                percent[(int)CharacterCard.StarGrade.Star1] / count[(int)CharacterCard.StarGrade.Star1],
+                percent[(int)CharacterCard.StarGrade.Star2] / count[(int)CharacterCard.StarGrade.Star2],
+                percent[(int)CharacterCard.StarGrade.Star3] / count[(int)CharacterCard.StarGrade.Star3],
+                percent[(int)CharacterCard.StarGrade.Star4] / count[(int)CharacterCard.StarGrade.Star4],
+                percent[(int)CharacterCard.StarGrade.Star5] / count[(int)CharacterCard.StarGrade.Star5],
+            };
 
             var rand = new Random(Guid.NewGuid().GetHashCode());
-            var rs = new RandomSelector<int>(rand);
-            for (int i = 0; i < addCount; ++i)
+            var rs = new RandomSelector<CharacterCard>(rand);
+
+            int id = 0;
+            for (var star = CharacterCard.StarGrade.Star1; star < CharacterCard.StarGrade.End; ++star)
             {
-                rs.Add(i, 0.1);
+                for (int i = 0; i < count[(int)star]; ++i)
+                {
+                    rs.Add(new CharacterCard { Id = id++, Star = star }, probability[(int)star]);
+                }
             }
 
-            for (int i = 0; i < addCount; ++i)
+            int getCount = 100000;
+            var dic = new Dictionary<CharacterCard.StarGrade, List<CharacterCard>>(getCount);
+            for (int i = 0; i < getCount; ++i)
             {
-                if (i % 2 == 0)
+                var card = rs.Get();
+                if (dic.ContainsKey(card.Star))
                 {
-                    rs.Add(i, 0.1);
+                    dic[card.Star].Add(card);
                 }
                 else
                 {
-                    rs.Add(i * 100, 0.1);
+                    var list = new List<CharacterCard>();
+                    list.Add(card);
+                    dic.Add(card.Star, list);
                 }
             }
 
-            Console.WriteLine(rs.Count);
-            Console.WriteLine(addCount * 1.5);
-            Console.WriteLine(rs.Count == addCount * 1.5);
-            Console.WriteLine(rs.Count == (int)(addCount * 1.5));
+            foreach (var pair in dic)
+            {
+                Console.WriteLine($"{pair.Key}: {pair.Value.Count}\t({pair.Value.Count / (double)getCount})");
+            }
         }
     }
 }
