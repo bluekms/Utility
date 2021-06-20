@@ -102,7 +102,7 @@ namespace Utility
         {
             int index = 0;
             double value = rand.NextDouble() * ratioList.Sum();
-            while (value <= 0)
+            while (value > 0)
             {
                 value -= ratioList[index++];
                 index %= ratioList.Count;
