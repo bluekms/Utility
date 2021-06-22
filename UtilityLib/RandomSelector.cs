@@ -10,6 +10,7 @@ namespace Utility
         private readonly Random rand;
         private readonly List<T> itemList;
         private readonly List<double> ratioList;
+        private double ratioSum;
 
         public int Count
         {
@@ -32,6 +33,7 @@ namespace Utility
             rand = r;
             itemList = new List<T>();
             ratioList = new List<double>();
+            ratioSum = 0;
         }
 
         public RandomSelector(Random r, int capacity)
@@ -39,6 +41,7 @@ namespace Utility
             rand = r;
             itemList = new List<T>(capacity);
             ratioList = new List<double>(capacity);
+            ratioSum = 0;
         }
 
         public RandomSelector(RandomSelector<T> src)
@@ -51,6 +54,7 @@ namespace Utility
             rand = src.rand;
             itemList = new List<T>(src.itemList);
             ratioList = new List<double>(src.ratioList);
+            ratioSum = src.ratioSum;
         }
 
         public void Add(T item, double ratio)
@@ -70,6 +74,8 @@ namespace Utility
             {
                 ratioList[index] += ratio;
             }
+
+            ratioSum += ratio;
         }
 
         public T Get()
@@ -91,6 +97,7 @@ namespace Utility
 
             int index = GetRandomIndex();
             var item = itemList[index];
+            ratioSum -= ratioList[index];
 
             itemList.RemoveAt(index);
             ratioList.RemoveAt(index);
@@ -101,7 +108,7 @@ namespace Utility
         private int GetRandomIndex()
         {
             int index = 0;
-            double value = rand.NextDouble() * ratioList.Sum();
+            double value = rand.NextDouble() * ratioSum;
             while (value > 0)
             {
                 value -= ratioList[index++];
