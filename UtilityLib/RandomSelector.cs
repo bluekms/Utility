@@ -111,8 +111,8 @@ namespace Utility
             double value = rand.NextDouble() * ratioSum;
             while (value > 0)
             {
-                value -= ratioList[index++];
-                index %= ratioList.Count;
+                index = (++index) % ratioList.Count;
+                value -= ratioList[index];
             }
 
             return index;
