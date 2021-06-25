@@ -8,6 +8,14 @@ namespace UtilityTester
     [TestClass]
     public class RandomSelectorTester
     {
+        internal enum GameUnit
+        {
+            Rock,
+            Paper,
+            Scissors,
+            End,
+        }
+
         [TestMethod]
         public void AddTest()
         {
@@ -19,10 +27,12 @@ namespace UtilityTester
             {
                 if (i % 2 == 0)
                 {
+                    // add prob
                     rs.Add(i, 0.1);
                 }
                 else
                 {
+                    // new item
                     rs.Add(i * 100, 0.1);
                 }
             }
@@ -50,72 +60,90 @@ namespace UtilityTester
         [TestMethod]
         public void ProbabilityTest()
         {
-            // star  | percent | count | probability
-            //     5 |     0.9 |    10 |    0.09
-            //     4 |     4.1 |    40 |    0.1025
-            //     3 |      35 |   100 |    0.35
-            //     2 |      35 |   150 |    0.23333
-            //     1 |      25 |   200 |    0.125
-            // total |     100 |   500 |    0.2
-            double[] percent = { 25, 35, 35, 4.1, 0.9 };
-            double[] count = { 200, 150, 100, 40, 10 };
-            double[] probability =
-            {
-                percent[(int)CharacterCard.StarGrade.Star1] / count[(int)CharacterCard.StarGrade.Star1],
-                percent[(int)CharacterCard.StarGrade.Star2] / count[(int)CharacterCard.StarGrade.Star2],
-                percent[(int)CharacterCard.StarGrade.Star3] / count[(int)CharacterCard.StarGrade.Star3],
-                percent[(int)CharacterCard.StarGrade.Star4] / count[(int)CharacterCard.StarGrade.Star4],
-                percent[(int)CharacterCard.StarGrade.Star5] / count[(int)CharacterCard.StarGrade.Star5],
-            };
+            var rs = CreateRandomSelector<GameUnit>((int)GameUnit.End);
 
-            var rand = new Random(Guid.NewGuid().GetHashCode());
-            var rs = new RandomSelector<CharacterCard>(rand);
-
-            int id = 0;
-            for (var star = CharacterCard.StarGrade.Star1; star < CharacterCard.StarGrade.End; ++star)
-            {
-                for (int i = 0; i < count[(int)star]; ++i)
-                {
-                    rs.Add(new CharacterCard { Id = id++, Star = star }, probability[(int)star]);
-                }
-            }
+            rs.Add(GameUnit.Rock, 50);
+            rs.Add(GameUnit.Paper, 25);
+            rs.Add(GameUnit.Scissors, 25);
 
             int getCount = 100000;
-            var dic = new Dictionary<CharacterCard.StarGrade, int>(getCount);
+            var dic = new Dictionary<GameUnit, int>();
             for (int i = 0; i < getCount; ++i)
             {
-                var card = rs.Get();
-                if (dic.ContainsKey(card.Star))
+                var item = rs.Get();
+                if (dic.ContainsKey(item))
                 {
-                    ++dic[card.Star];
+                    ++dic[item];
                 }
                 else
                 {
-                    dic.Add(card.Star, 1);
+                    dic.Add(item, 1);
                 }
             }
+
+            for (var key = GameUnit.Rock; key < GameUnit.End; ++key)
+            {
+                if (!dic.ContainsKey(key))
+                {
+                    continue;
+                }
+
+                double srcProb = rs.GetProbability(key);
+                double currProb = dic[key] / (double)getCount;
+                double diff = Math.Abs(srcProb - currProb);
+                Assert.IsTrue(diff < 0.005);
+            }
+        }
+
+        [TestMethod]
+        public void RatioAndProbabilityTest()
+        {
+            var rs = CreateRandomSelector<GameUnit>((int)GameUnit.End);
+
+            rs.Add(GameUnit.Rock, 1 / 3D);
+            rs.Add(GameUnit.Paper, 100);
+            rs.Add(GameUnit.Scissors, 10000);
+
+            double ratioSum = (1 / 3D) + 100 + 10000;
+            double targetProb = (1 / 3D) / ratioSum;
+
+            double getProb = rs.GetProbability(GameUnit.Rock);
+            double diff = Math.Abs(targetProb - getProb);
+            Assert.IsTrue(diff < double.Epsilon);
+
+            RandomSelector<GameUnit> rs2 = null;
+            GameUnit item = GameUnit.End;
+            while (true)
+            {
+                rs2 = new RandomSelector<GameUnit>(rs);
+                item = rs2.Pick();
+                if (item != GameUnit.Rock)
+                {
+                    break;
+                }
+            }
+
+            var srcRatio = rs.GetRatio(item);
+            ratioSum -= srcRatio;
+            targetProb = (1 / 3D) / ratioSum;
+
+            getProb = rs2.GetProbability(GameUnit.Rock);
+            diff = Math.Abs(targetProb - getProb);
+            Assert.IsTrue(diff < double.Epsilon);
+        }
+
+        private static RandomSelector<T> CreateRandomSelector<T>(int count)
+        {
+            var rand = new Random(Guid.NewGuid().GetHashCode());
+            return new RandomSelector<T>(rand, count);
         }
 
         private static RandomSelector<int> InitInt(int count)
         {
-            var rand = new Random(Guid.NewGuid().GetHashCode());
-            var rs = new RandomSelector<int>(rand);
+            var rs = CreateRandomSelector<int>(count);
             for (int i = 0; i < count; ++i)
             {
                 rs.Add(i, 0.1);
-            }
-
-            return rs;
-        }
-
-        private static RandomSelector<Human> InitObject(int count)
-        {
-            var rand = new Random(Guid.NewGuid().GetHashCode());
-            var rs = new RandomSelector<Human>(rand);
-            for (int i = 0; i < count; ++i)
-            {
-                string name = Guid.NewGuid().ToString().Substring(0, 3);
-                rs.Add(new Human { Name = name, Age = i }, 0.1);
             }
 
             return rs;
