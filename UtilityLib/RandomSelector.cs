@@ -12,22 +12,6 @@ namespace Utility
         private readonly List<double> ratioList;
         private double ratioSum;
 
-        public int Count
-        {
-            get { return itemList.Count; }
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            for (int i = 0; i < itemList.Count; ++i)
-            {
-                sb.AppendLine($"{itemList[i]} : {ratioList[i]}");
-            }
-
-            return sb.ToString();
-        }
-
         public RandomSelector(Random r)
         {
             rand = r;
@@ -103,6 +87,54 @@ namespace Utility
             ratioList.RemoveAt(index);
 
             return item;
+        }
+
+        public int Count
+        {
+            get { return itemList.Count; }
+        }
+
+        public double GetRatio(T item)
+        {
+            int index = itemList.IndexOf(item);
+            if (index < 0)
+            {
+                return index;
+            }
+
+            return ratioList[index];
+        }
+
+        public double GetRatio(Predicate<T> match)
+        {
+            int index = itemList.FindIndex(match);
+            if (index < 0)
+            {
+                return index;
+            }
+
+            return ratioList[index];
+        }
+
+        public double GetProbability(T item)
+        {
+            return GetRatio(item) / ratioSum;
+        }
+
+        public double GetProbability(Predicate<T> match)
+        {
+            return GetRatio(match) / ratioSum;
+        }
+
+        public override string ToString()
+        {
+            var sb = new StringBuilder();
+            for (int i = 0; i < itemList.Count; ++i)
+            {
+                sb.AppendLine($"{itemList[i]} : {ratioList[i]}");
+            }
+
+            return sb.ToString();
         }
 
         private int GetRandomIndex()
