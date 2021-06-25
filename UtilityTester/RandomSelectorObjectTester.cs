@@ -16,10 +16,21 @@ namespace UtilityTester
             Assert.AreEqual(rs.Count, addCount);
 
             var rs2 = new RandomSelector<Human>(rs);
-            int dupleCount = addCount / 2;
-            for (int i = 0; i < dupleCount; ++i)
+            for (int i = 0; i < addCount; ++i)
             {
+                if (i % 2 == 0)
+                {
+                    var item = rs2.Pick();
+                    rs.Add(item, 0.1);
+                }
+                else
+                {
+                    string name = Guid.NewGuid().ToString().Substring(0, 3);
+                    rs.Add(new Human { Name = name, Age = i }, 0.1);
+                }
             }
+
+            Assert.AreEqual(rs.Count, addCount * 1.5);
         }
 
         private static RandomSelector<T> CreateRandomSelector<T>(int count)

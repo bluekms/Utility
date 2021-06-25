@@ -110,9 +110,9 @@ namespace UtilityTester
             double getProb = rs.GetProbability(GameUnit.Rock);
             double diff = Math.Abs(targetProb - getProb);
             Assert.IsTrue(diff < double.Epsilon);
+            GameUnit item;
 
-            RandomSelector<GameUnit> rs2 = null;
-            GameUnit item = GameUnit.End;
+            RandomSelector<GameUnit> rs2;
             while (true)
             {
                 rs2 = new RandomSelector<GameUnit>(rs);
@@ -123,7 +123,7 @@ namespace UtilityTester
                 }
             }
 
-            var srcRatio = rs.GetRatio(item);
+            double srcRatio = rs.GetRatio(item);
             ratioSum -= srcRatio;
             targetProb = (1 / 3D) / ratioSum;
 
