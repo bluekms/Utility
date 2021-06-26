@@ -66,7 +66,7 @@ namespace Utility
         {
             if (itemList.Count == 0)
             {
-                return default;
+                throw new InvalidOperationException("Item Empty");
             }
 
             return itemList[GetRandomIndex()];
@@ -76,7 +76,7 @@ namespace Utility
         {
             if (itemList.Count == 0)
             {
-                return default;
+                throw new InvalidOperationException("Item Empty");
             }
 
             int index = GetRandomIndex();
