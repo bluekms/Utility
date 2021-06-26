@@ -41,6 +41,23 @@ namespace UtilityTester
         }
 
         [TestMethod]
+        public void PickThrowTest()
+        {
+            var rs = CreateRandomSelector<int>(0);
+            bool exception = false;
+            try
+            {
+                rs.Pick();
+            }
+            catch
+            {
+                exception = true;
+            }
+
+            Assert.IsTrue(exception);
+        }
+
+        [TestMethod]
         public void DeepCopyPickTest()
         {
             int addCount = 100;
@@ -48,20 +65,19 @@ namespace UtilityTester
             var rs2 = new RandomSelector<int>(rs1);
             Assert.AreEqual(rs1.Count, rs2.Count);
 
-            for (int i = 0; i < addCount * 0.5; ++i)
+            for (int i = 0; i < addCount / 2; ++i)
             {
                 rs2.Pick();
             }
 
             Assert.AreNotEqual(rs1.Count, rs2.Count);
-            Assert.AreEqual(rs2.Count, addCount * 0.5);
+            Assert.AreEqual(rs2.Count, addCount / 2);
         }
 
         [TestMethod]
         public void ProbabilityTest()
         {
             var rs = CreateRandomSelector<GameUnit>((int)GameUnit.End);
-
             rs.Add(GameUnit.Rock, 50);
             rs.Add(GameUnit.Paper, 25);
             rs.Add(GameUnit.Scissors, 25);
@@ -110,8 +126,8 @@ namespace UtilityTester
             double getProb = rs.GetProbability(GameUnit.Rock);
             double diff = Math.Abs(targetProb - getProb);
             Assert.IsTrue(diff < double.Epsilon);
-            GameUnit item;
 
+            GameUnit item;
             RandomSelector<GameUnit> rs2;
             while (true)
             {

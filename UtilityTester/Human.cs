@@ -26,7 +26,7 @@ namespace UtilityTester
 
         public override int GetHashCode()
         {
-            throw new NotImplementedException();
+            return Tuple.Create(Name, Age).GetHashCode();
         }
     }
 }
