@@ -1,11 +1,11 @@
 <Project>
-	<!-- RequirePackageReference °¡ ÇÏ³ª¶óµµ ÇÁ·ÎÁ§Æ®¿¡¼­ ºüÁö¸é ¿¡·¯³»±â -->
+	<!-- RequirePackageReference ê°€ í•˜ë‚˜ë¼ë„ í”„ë¡œì íŠ¸ì—ì„œ ë¹ ì§€ë©´ ì—ëŸ¬ë‚´ê¸° -->
 	<Target Name="CheckRequirePackageReferences"
           AfterTargets="CollectPackageReferences">
 		<ItemGroup>
 			<MissingPackages Include="@(RequirePackageReference)" Exclude="@(PackageReference)" />
 		</ItemGroup>
 
-		<Error Condition="@(MissingPackages) != ''" Text="Missing RequiredPackageReference: @(MissingPackages)" />
+		<!--<Error Condition="@(MissingPackages) != ''" Text="Missing RequiredPackageReference: @(MissingPackages)" />-->
 	</Target>
 </Project>
