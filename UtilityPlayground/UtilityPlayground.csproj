@@ -22,10 +22,6 @@
     </PackageReference>
   </ItemGroup>
 
-  <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
-    <Exec Command="dotnet format -f" />
-  </Target>
-
 	<ItemGroup>
 	  <ProjectReference Include="..\UtilityLib\UtilityLib.csproj" />
 	  <ProjectReference Include="..\UtilityTester\UtilityTester.csproj" />
