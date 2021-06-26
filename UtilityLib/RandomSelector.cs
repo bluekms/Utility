@@ -99,7 +99,7 @@ namespace Utility
             int index = itemList.IndexOf(item);
             if (index < 0)
             {
-                return index;
+                return 0D;
             }
 
             return ratioList[index];
@@ -110,7 +110,7 @@ namespace Utility
             int index = itemList.FindIndex(match);
             if (index < 0)
             {
-                return index;
+                return 0D;
             }
 
             return ratioList[index];
