@@ -20,10 +20,13 @@ jobs:
         dotnet tool restore
     - name: Format
       run: |
-        dotnet format -w -s
+        dotnet format --check
         
   build:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        configuration: ['Debug', 'Release']
     steps:
     - uses: actions/checkout@v2
     - name: Setup .NET
@@ -33,9 +36,9 @@ jobs:
     - name: Restore dependencies
       run: |
         dotnet restore
-    - name: Debug Build
+    - name: ${{ matrix.configuration }} Build
       run: |
-        dotnet build --no-restore
-    - name: Release Test
+        dotnet build --no-restore --configuration ${{ matrix.configuration }}
+    - name: ${{ matrix.configuration }} Test
       run: |
-        dotnet test --no-build --configuration Release --verbosity normal
+        dotnet test --no-build --configuration ${{ matrix.configuration }} --verbosity normal
