@@ -15,12 +15,11 @@ jobs:
       uses: actions/setup-dotnet@v1
       with:
         dotnet-version: 5.0.x
-    - name: Install dotnet-format
+    - name: Restore dotnet-format
       run: |
         dotnet tool restore
     - name: Format
       run: |
-        dotnet restore
         dotnet format -w -s
         
   build:
