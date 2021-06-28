@@ -20,7 +20,7 @@ jobs:
         dotnet tool restore
     - name: Format
       run: |
-        dotnet format -w -s
+        dotnet format --check
         
   build:
     runs-on: ubuntu-20.04
