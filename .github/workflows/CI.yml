@@ -38,4 +38,4 @@ jobs:
         dotnet build --no-restore
     - name: Release Test
       run: |
-        dotnet test --configuration Release --verbosity normal
+        dotnet test --no-restore --verbosity normal
