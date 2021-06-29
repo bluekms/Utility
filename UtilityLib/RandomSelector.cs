@@ -12,20 +12,12 @@ namespace Utility
         private readonly List<double> ratioList;
         private double ratioSum;
 
-        public RandomSelector(Random r)
+        internal RandomSelector(Random r, List<T> itemList, List<double> ratioList, double ratioSum)
         {
             rand = r;
-            itemList = new List<T>();
-            ratioList = new List<double>();
-            ratioSum = 0;
-        }
-
-        public RandomSelector(Random r, int capacity)
-        {
-            rand = r;
-            itemList = new List<T>(capacity);
-            ratioList = new List<double>(capacity);
-            ratioSum = 0;
+            this.itemList = itemList;
+            this.ratioList = ratioList;
+            this.ratioSum = ratioSum;
         }
 
         public RandomSelector(RandomSelector<T> src)
@@ -39,27 +31,6 @@ namespace Utility
             itemList = new List<T>(src.itemList);
             ratioList = new List<double>(src.ratioList);
             ratioSum = src.ratioSum;
-        }
-
-        public void Add(T item, double ratio)
-        {
-            if (ratio < 0)
-            {
-                return;
-            }
-
-            int index = itemList.IndexOf(item);
-            if (index < 0)
-            {
-                itemList.Add(item);
-                ratioList.Add(ratio);
-            }
-            else
-            {
-                ratioList[index] += ratio;
-            }
-
-            ratioSum += ratio;
         }
 
         public T Get()
