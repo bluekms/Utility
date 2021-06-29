@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using Utility;
 using UtilityTester;
 
@@ -25,19 +24,14 @@ namespace UtilityPlayground
                 new Human { Name = "CCC", Age = 40 },
             };
 
-            var rs = CreateRandomSelector<Human>(3);
-            rs.Add(list[0], 1);
-            rs.Add(list[1], 1);
-            rs.Add(list[2], 1);
+            var rsb = new RandomSelectorBuilder<Human>(new Random());
+            rsb.Add(list[0], 1);
+            rsb.Add(list[1], 1);
+            rsb.Add(list[2], 1);
 
+            var rs = rsb.Build();
             var getProb = rs.GetProbability(item => item.Name == "AAA");
             Console.WriteLine(getProb);
-        }
-
-        private static RandomSelector<T> CreateRandomSelector<T>(int count)
-        {
-            var rand = new Random(Guid.NewGuid().GetHashCode());
-            return new RandomSelector<T>(rand, count);
         }
     }
 }

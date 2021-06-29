@@ -20,30 +20,22 @@ namespace UtilityTester
         public void AddTest()
         {
             int addCount = 100;
-            var rs = InitInt(addCount);
-            Assert.AreEqual(rs.Count, addCount);
 
+            var rsb = new RandomSelectorBuilder<int>(addCount);
             for (int i = 0; i < addCount; ++i)
             {
-                if (i % 2 == 0)
-                {
-                    // add prob
-                    rs.Add(i, 0.1);
-                }
-                else
-                {
-                    // new item
-                    rs.Add(i * 100, 0.1);
-                }
+                rsb.Add(i, 1);
             }
 
-            Assert.AreEqual(rs.Count, addCount * 1.5);
+            var rs = rsb.Build();
+            Assert.AreEqual(rs.Count, addCount);
         }
 
         [TestMethod]
         public void PickThrowTest()
         {
-            var rs = CreateRandomSelector<int>(0);
+            var rsb = new RandomSelectorBuilder<int>(0);
+            var rs = rsb.Build();
             bool exception = false;
             try
             {
@@ -61,7 +53,13 @@ namespace UtilityTester
         public void DeepCopyPickTest()
         {
             int addCount = 100;
-            var rs1 = InitInt(addCount);
+            var rsb = new RandomSelectorBuilder<int>(addCount);
+            for (int i = 0; i < addCount; ++i)
+            {
+                rsb.Add(i, 1);
+            }
+
+            var rs1 = rsb.Build();
             var rs2 = new RandomSelector<int>(rs1);
             Assert.AreEqual(rs1.Count, rs2.Count);
 
@@ -77,11 +75,12 @@ namespace UtilityTester
         [TestMethod]
         public void ProbabilityTest()
         {
-            var rs = CreateRandomSelector<GameUnit>((int)GameUnit.End);
-            rs.Add(GameUnit.Rock, 50);
-            rs.Add(GameUnit.Paper, 25);
-            rs.Add(GameUnit.Scissors, 25);
+            var rsb = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
+            rsb.Add(GameUnit.Rock, 50);
+            rsb.Add(GameUnit.Paper, 25);
+            rsb.Add(GameUnit.Scissors, 25);
 
+            var rs = rsb.Build();
             int getCount = 100000;
             var dic = new Dictionary<GameUnit, int>();
             for (int i = 0; i < getCount; ++i)
@@ -114,15 +113,15 @@ namespace UtilityTester
         [TestMethod]
         public void RatioAndProbabilityTest()
         {
-            var rs = CreateRandomSelector<GameUnit>((int)GameUnit.End);
-
-            rs.Add(GameUnit.Rock, 1 / 3D);
-            rs.Add(GameUnit.Paper, 100);
-            rs.Add(GameUnit.Scissors, 10000);
+            var rsb = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
+            rsb.Add(GameUnit.Rock, 1 / 3D);
+            rsb.Add(GameUnit.Paper, 100);
+            rsb.Add(GameUnit.Scissors, 10000);
 
             double ratioSum = (1 / 3D) + 100 + 10000;
             double targetProb = (1 / 3D) / ratioSum;
 
+            var rs = rsb.Build();
             double getProb = rs.GetProbability(GameUnit.Rock);
             double diff = Math.Abs(targetProb - getProb);
             Assert.IsTrue(diff < double.Epsilon);
@@ -146,23 +145,6 @@ namespace UtilityTester
             getProb = rs2.GetProbability(GameUnit.Rock);
             diff = Math.Abs(targetProb - getProb);
             Assert.IsTrue(diff < double.Epsilon);
-        }
-
-        private static RandomSelector<T> CreateRandomSelector<T>(int count)
-        {
-            var rand = new Random(Guid.NewGuid().GetHashCode());
-            return new RandomSelector<T>(rand, count);
-        }
-
-        private static RandomSelector<int> InitInt(int count)
-        {
-            var rs = CreateRandomSelector<int>(count);
-            for (int i = 0; i < count; ++i)
-            {
-                rs.Add(i, 0.1);
-            }
-
-            return rs;
         }
     }
 }
