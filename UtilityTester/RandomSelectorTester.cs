@@ -8,14 +8,6 @@ namespace UtilityTester
     [TestClass]
     public class RandomSelectorTester
     {
-        internal enum GameUnit
-        {
-            Rock,
-            Paper,
-            Scissors,
-            End,
-        }
-
         [TestMethod]
         public void AddTest()
         {
@@ -103,48 +95,19 @@ namespace UtilityTester
                     continue;
                 }
 
-                double srcProb = rs.GetProbability(key);
+                double srcProb = 0;
+                switch (key)
+                {
+                    case GameUnit.Rock: srcProb = 0.5; break;
+                    case GameUnit.Paper: srcProb = 0.25; break;
+                    case GameUnit.Scissors: srcProb = 0.25; break;
+                    default: Assert.Fail(); break;
+                }
+
                 double currProb = dic[key] / (double)getCount;
                 double diff = Math.Abs(srcProb - currProb);
                 Assert.IsTrue(diff < 0.005);
             }
-        }
-
-        [TestMethod]
-        public void RatioAndProbabilityTest()
-        {
-            var rsb = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
-            rsb.Add(GameUnit.Rock, 1 / 3D);
-            rsb.Add(GameUnit.Paper, 100);
-            rsb.Add(GameUnit.Scissors, 10000);
-
-            double ratioSum = (1 / 3D) + 100 + 10000;
-            double targetProb = (1 / 3D) / ratioSum;
-
-            var rs = rsb.Build();
-            double getProb = rs.GetProbability(GameUnit.Rock);
-            double diff = Math.Abs(targetProb - getProb);
-            Assert.IsTrue(diff < double.Epsilon);
-
-            GameUnit item;
-            RandomSelector<GameUnit> rs2;
-            while (true)
-            {
-                rs2 = new RandomSelector<GameUnit>(rs);
-                item = rs2.Pick();
-                if (item != GameUnit.Rock)
-                {
-                    break;
-                }
-            }
-
-            double srcRatio = rs.GetRatio(item);
-            ratioSum -= srcRatio;
-            targetProb = (1 / 3D) / ratioSum;
-
-            getProb = rs2.GetProbability(GameUnit.Rock);
-            diff = Math.Abs(targetProb - getProb);
-            Assert.IsTrue(diff < double.Epsilon);
         }
     }
 }

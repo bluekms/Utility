@@ -107,55 +107,19 @@ namespace UtilityTester
                     continue;
                 }
 
-                double srcProb = rs.GetProbability(key);
+                double srcProb = 0;
+                switch (key.Name)
+                {
+                    case "AAA": srcProb = 0.5; break;
+                    case "BBB": srcProb = 0.25; break;
+                    case "CCC": srcProb = 0.25; break;
+                    default: break;
+                }
+
                 double currProb = dic[key] / (double)getCount;
                 double diff = Math.Abs(srcProb - currProb);
                 Assert.IsTrue(diff < 0.005);
             }
-        }
-
-        [TestMethod]
-        public void RatioAndProbabilityTest()
-        {
-            var list = new List<Human>(3)
-            {
-                new Human { Name = "AAA", Age = 30 },
-                new Human { Name = "BBB", Age = 20 },
-                new Human { Name = "CCC", Age = 40 },
-            };
-
-            var rsb = new RandomSelectorBuilder<Human>(3);
-            rsb.Add(list[0], 1 / 3D);
-            rsb.Add(list[1], 100);
-            rsb.Add(list[2], 10000);
-
-            double ratioSum = (1 / 3D) + 100 + 10000;
-            double targetProb = (1 / 3D) / ratioSum;
-
-            var rs = rsb.Build();
-            double getProb = rs.GetProbability(list[0]);
-            double diff = Math.Abs(targetProb - getProb);
-            Assert.IsTrue(diff < double.Epsilon);
-
-            Human item;
-            RandomSelector<Human> rs2;
-            while (true)
-            {
-                rs2 = new RandomSelector<Human>(rs);
-                item = rs2.Pick();
-                if (item != list[0])
-                {
-                    break;
-                }
-            }
-
-            double srcRatio = rs.GetRatio(item);
-            ratioSum -= srcRatio;
-            targetProb = (1 / 3D) / ratioSum;
-
-            getProb = rs2.GetProbability(list[0]);
-            diff = Math.Abs(targetProb - getProb);
-            Assert.IsTrue(diff < double.Epsilon);
         }
     }
 }
