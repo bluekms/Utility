@@ -9,15 +9,13 @@ namespace Utility
     {
         private readonly Random rand;
         private readonly List<T> itemList;
-        private readonly List<double> ratioList;
-        private double ratioSum;
+        private readonly List<double> ratioSumList;
 
-        internal RandomSelector(Random r, List<T> itemList, List<double> ratioList, double ratioSum)
+        internal RandomSelector(Random r, List<T> itemList, List<double> ratioList)
         {
             rand = r;
             this.itemList = itemList;
-            this.ratioList = ratioList;
-            this.ratioSum = ratioSum;
+            this.ratioSumList = ratioList;
         }
 
         public RandomSelector(RandomSelector<T> src)
@@ -29,8 +27,7 @@ namespace Utility
 
             rand = src.rand;
             itemList = new List<T>(src.itemList);
-            ratioList = new List<double>(src.ratioList);
-            ratioSum = src.ratioSum;
+            ratioSumList = new List<double>(src.ratioSumList);
         }
 
         public T Get()
@@ -52,10 +49,10 @@ namespace Utility
 
             int index = GetRandomIndex();
             var item = itemList[index];
-            ratioSum -= ratioList[index];
 
+            // TODO 리벨런싱
             itemList.RemoveAt(index);
-            ratioList.RemoveAt(index);
+            ratioSumList.RemoveAt(index);
 
             return item;
         }
@@ -65,60 +62,18 @@ namespace Utility
             get { return itemList.Count; }
         }
 
-        public double GetRatio(T item)
-        {
-            int index = itemList.IndexOf(item);
-            if (index < 0)
-            {
-                return 0D;
-            }
-
-            return ratioList[index];
-        }
-
-        public double GetRatio(Predicate<T> match)
-        {
-            int index = itemList.FindIndex(match);
-            if (index < 0)
-            {
-                return 0D;
-            }
-
-            return ratioList[index];
-        }
-
-        public double GetProbability(T item)
-        {
-            return GetRatio(item) / ratioSum;
-        }
-
-        public double GetProbability(Predicate<T> match)
-        {
-            return GetRatio(match) / ratioSum;
-        }
-
-        public override string ToString()
-        {
-            var sb = new StringBuilder();
-            for (int i = 0; i < itemList.Count; ++i)
-            {
-                sb.AppendLine($"{itemList[i]} : {ratioList[i]}");
-            }
-
-            return sb.ToString();
-        }
-
         private int GetRandomIndex()
         {
-            int index = 0;
-            double value = rand.NextDouble() * ratioSum;
-            while (value > 0)
+            double value = rand.NextDouble() * ratioSumList[^1];
+            int index = ratioSumList.BinarySearch(value);
+            if (index < 0)
             {
-                index = (++index) % ratioList.Count;
-                value -= ratioList[index];
+                return ~index;
             }
-
-            return index;
+            else
+            {
+                return index;
+            }
         }
     }
 }
