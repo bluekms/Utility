@@ -12,31 +12,24 @@ namespace UtilityTester
         public void AddTest()
         {
             int addCount = 100;
-            var rs = InitObject(addCount);
-            Assert.AreEqual(rs.Count, addCount);
-
-            var rs2 = new RandomSelector<Human>(rs);
+            var ageRand = new Random();
+            var rsb = new RandomSelectorBuilder<Human>(addCount);
             for (int i = 0; i < addCount; ++i)
             {
-                if (i % 2 == 0)
-                {
-                    var item = rs2.Pick();
-                    rs.Add(item, 0.1);
-                }
-                else
-                {
-                    string name = Guid.NewGuid().ToString().Substring(0, 3);
-                    rs.Add(new Human { Name = name, Age = i }, 0.1);
-                }
+                string name = Guid.NewGuid().ToString().Substring(0, 3);
+                int age = ageRand.Next(0, 100);
+                rsb.Add(new Human { Name = name, Age = age }, 1);
             }
 
-            Assert.AreEqual(rs.Count, addCount * 1.5);
+            var rs = rsb.Build();
+            Assert.AreEqual(rs.Count, addCount);
         }
 
         [TestMethod]
         public void PickThrowTest()
         {
-            var rs = CreateRandomSelector<Human>(0);
+            var rsb = new RandomSelectorBuilder<Human>(0);
+            var rs = rsb.Build();
             bool exception = false;
             try
             {
@@ -54,7 +47,16 @@ namespace UtilityTester
         public void DeepCopyPickTest()
         {
             int addCount = 100;
-            var rs1 = InitObject(addCount);
+            var ageRand = new Random();
+            var rsb = new RandomSelectorBuilder<Human>(addCount);
+            for (int i = 0; i < addCount; ++i)
+            {
+                string name = Guid.NewGuid().ToString().Substring(0, 3);
+                int age = ageRand.Next(0, 100);
+                rsb.Add(new Human { Name = name, Age = age }, 1);
+            }
+
+            var rs1 = rsb.Build();
             var rs2 = new RandomSelector<Human>(rs1);
             Assert.AreEqual(rs1.Count, rs2.Count);
 
@@ -77,11 +79,12 @@ namespace UtilityTester
                 new Human { Name = "CCC", Age = 40 },
             };
 
-            var rs = CreateRandomSelector<Human>(3);
-            rs.Add(list[0], 50);
-            rs.Add(list[1], 25);
-            rs.Add(list[2], 25);
+            var rsb = new RandomSelectorBuilder<Human>(3);
+            rsb.Add(list[0], 50);
+            rsb.Add(list[1], 25);
+            rsb.Add(list[2], 25);
 
+            var rs = rsb.Build();
             int getCount = 100000;
             var dic = new Dictionary<Human, int>();
             for (int i = 0; i < getCount; ++i)
@@ -121,14 +124,15 @@ namespace UtilityTester
                 new Human { Name = "CCC", Age = 40 },
             };
 
-            var rs = CreateRandomSelector<Human>(3);
-            rs.Add(list[0], 1 / 3D);
-            rs.Add(list[1], 100);
-            rs.Add(list[2], 10000);
+            var rsb = new RandomSelectorBuilder<Human>(3);
+            rsb.Add(list[0], 1 / 3D);
+            rsb.Add(list[1], 100);
+            rsb.Add(list[2], 10000);
 
             double ratioSum = (1 / 3D) + 100 + 10000;
             double targetProb = (1 / 3D) / ratioSum;
 
+            var rs = rsb.Build();
             double getProb = rs.GetProbability(list[0]);
             double diff = Math.Abs(targetProb - getProb);
             Assert.IsTrue(diff < double.Epsilon);
@@ -152,24 +156,6 @@ namespace UtilityTester
             getProb = rs2.GetProbability(list[0]);
             diff = Math.Abs(targetProb - getProb);
             Assert.IsTrue(diff < double.Epsilon);
-        }
-
-        private static RandomSelector<T> CreateRandomSelector<T>(int count)
-        {
-            var rand = new Random(Guid.NewGuid().GetHashCode());
-            return new RandomSelector<T>(rand, count);
-        }
-
-        private static RandomSelector<Human> InitObject(int count)
-        {
-            var rs = CreateRandomSelector<Human>(count);
-            for (int i = 0; i < count; ++i)
-            {
-                string name = Guid.NewGuid().ToString().Substring(0, 3);
-                rs.Add(new Human { Name = name, Age = i }, 0.1);
-            }
-
-            return rs;
         }
     }
 }
