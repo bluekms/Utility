@@ -16,7 +16,7 @@ namespace UtilityTester
             var rsb = new RandomSelectorBuilder<Human>(addCount);
             for (int i = 0; i < addCount; ++i)
             {
-                string name = Guid.NewGuid().ToString().Substring(0, 3);
+                string name = $"{Guid.NewGuid().ToString().Substring(0, 3)}_{i}";
                 int age = ageRand.Next(0, 100);
                 rsb.Add(new Human { Name = name, Age = age }, 1);
             }
@@ -51,7 +51,7 @@ namespace UtilityTester
             var rsb = new RandomSelectorBuilder<Human>(addCount);
             for (int i = 0; i < addCount; ++i)
             {
-                string name = Guid.NewGuid().ToString().Substring(0, 3);
+                string name = $"{Guid.NewGuid().ToString().Substring(0, 3)}_{i}";
                 int age = ageRand.Next(0, 100);
                 rsb.Add(new Human { Name = name, Age = age }, 1);
             }
