@@ -120,7 +120,102 @@ namespace UtilityTester
 
                 double currProb = dic[key] / (double)getCount;
                 double diff = Math.Abs(srcProb - currProb);
-                Assert.IsTrue(diff < 0.005);
+                Assert.IsTrue(diff < ProbabilitySensitivity);
+            }
+        }
+
+        [TestMethod]
+        public void PickProbabilityTest()
+        {
+            var list = new List<Human>(3)
+            {
+                new Human { Name = "AAA", Age = 30 },
+                new Human { Name = "BBB", Age = 20 },
+                new Human { Name = "CCC", Age = 40 },
+            };
+
+            for (int l = 0; l < 10; ++l)
+            {
+                var rsb = new RandomSelectorBuilder<Human>(3);
+                rsb.Add(list[0], 50);
+                rsb.Add(list[1], 25);
+                rsb.Add(list[2], 25);
+
+                var rs = rsb.Build();
+                var pickedItem = rs.Pick();
+
+                int getCount = 100000;
+                var dic = new Dictionary<Human, int>();
+                for (int i = 0; i < getCount; ++i)
+                {
+                    var item = rs.Get();
+                    if (dic.ContainsKey(item))
+                    {
+                        ++dic[item];
+                    }
+                    else
+                    {
+                        dic.Add(item, 1);
+                    }
+                }
+
+                foreach (var key in list)
+                {
+                    if (!dic.ContainsKey(key))
+                    {
+                        continue;
+                    }
+
+                    double srcProb = 0;
+                    switch (pickedItem.Name)
+                    {
+                        case "AAA":
+                            {
+                                switch (key.Name)
+                                {
+                                    case "AAA": Assert.Fail(); return;
+                                    case "BBB": srcProb = 0.5; break;
+                                    case "CCC": srcProb = 0.5; break;
+                                    default: break;
+                                }
+                            }
+
+                            break;
+
+                        case "BBB":
+                            {
+                                switch (key.Name)
+                                {
+                                    case "AAA": srcProb = 2 / 3D; break;
+                                    case "BBB": Assert.Fail(); return;
+                                    case "CCC": srcProb = 1 / 3D; break;
+                                    default: break;
+                                }
+                            }
+
+                            break;
+
+                        case "CCC":
+                            {
+                                switch (key.Name)
+                                {
+                                    case "AAA": srcProb = 2 / 3D; break;
+                                    case "BBB": srcProb = 1 / 3D; break;
+                                    case "CCC": Assert.Fail(); return;
+                                    default: break;
+                                }
+                            }
+
+                            break;
+
+                        default:
+                            break;
+                    }
+
+                    double currProb = dic[key] / (double)getCount;
+                    double diff = Math.Abs(srcProb - currProb);
+                    Assert.IsTrue(diff < ProbabilitySensitivity);
+                }
             }
         }
     }
