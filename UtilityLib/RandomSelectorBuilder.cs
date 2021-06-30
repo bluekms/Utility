@@ -44,19 +44,7 @@ namespace Utility
 
         public RandomSelector<T> Build()
         {
-            var ratioSumList = new List<double>();
-            for (int i = 0; i < ratioList.Count; ++i)
-            {
-                double sum = ratioList[i];
-                for (int j = 0; j < i; ++j)
-                {
-                    sum += ratioList[j];
-                }
-
-                ratioSumList.Add(sum);
-            }
-
-            return new RandomSelector<T>(rand ?? new Random(), new List<T>(itemList), ratioSumList);
+            return new RandomSelector<T>(rand ?? new Random(), new List<T>(itemList), ratioList);
         }
     }
 }

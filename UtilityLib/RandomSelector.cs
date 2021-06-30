@@ -15,7 +15,18 @@ namespace Utility
         {
             rand = r;
             this.itemList = itemList;
-            this.ratioSumList = ratioList;
+
+            ratioSumList = new List<double>();
+            for (int i = 0; i < ratioList.Count; ++i)
+            {
+                double sum = ratioList[i];
+                for (int j = 0; j < i; ++j)
+                {
+                    sum += ratioList[j];
+                }
+
+                ratioSumList.Add(sum);
+            }
         }
 
         public RandomSelector(RandomSelector<T> src)
@@ -50,7 +61,21 @@ namespace Utility
             int index = GetRandomIndex();
             var item = itemList[index];
 
-            // TODO 리벨런싱
+            double ratio;
+            if (index == 0)
+            {
+                ratio = ratioSumList[index];
+            }
+            else
+            {
+                ratio = ratioSumList[index] - ratioSumList[index - 1];
+            }
+
+            for (int i = index; i < ratioSumList.Count; ++i)
+            {
+                ratioSumList[i] -= ratio;
+            }
+
             itemList.RemoveAt(index);
             ratioSumList.RemoveAt(index);
 
