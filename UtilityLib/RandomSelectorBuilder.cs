@@ -9,16 +9,16 @@ namespace Utility
         private readonly List<T> itemList;
         private readonly List<double> ratioList;
 
-        public RandomSelectorBuilder(Random r = null)
+        public RandomSelectorBuilder(Random useGlobalRand = null)
         {
-            rand = r;
+            rand = useGlobalRand;
             itemList = new List<T>();
             ratioList = new List<double>();
         }
 
-        public RandomSelectorBuilder(int capacity, Random r = null)
+        public RandomSelectorBuilder(int capacity, Random useGlobalRand = null)
         {
-            rand = r;
+            rand = useGlobalRand;
             itemList = new List<T>(capacity);
             ratioList = new List<double>(capacity);
         }
@@ -42,9 +42,9 @@ namespace Utility
             }
         }
 
-        public RandomSelector<T> Build()
+        public RandomSelector<T> Create()
         {
-            return new RandomSelector<T>(rand ?? new Random(), new List<T>(itemList), ratioList);
+            return new(rand ?? new Random(), new List<T>(itemList), ratioList);
         }
     }
 }

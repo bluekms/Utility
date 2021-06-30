@@ -1,7 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace Utility
 {
@@ -11,7 +9,9 @@ namespace Utility
         private readonly List<T> itemList;
         private readonly List<double> ratioSumList;
 
-        internal RandomSelector(Random r, List<T> itemList, List<double> ratioList)
+        public int Count => itemList.Count;
+
+        internal RandomSelector(Random r, List<T> itemList, IReadOnlyList<double> ratioList)
         {
             rand = r;
             this.itemList = itemList;
@@ -80,11 +80,6 @@ namespace Utility
             ratioSumList.RemoveAt(index);
 
             return item;
-        }
-
-        public int Count
-        {
-            get { return itemList.Count; }
         }
 
         private int GetRandomIndex()

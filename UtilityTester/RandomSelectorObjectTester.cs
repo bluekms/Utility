@@ -23,7 +23,7 @@ namespace UtilityTester
                 rsb.Add(new Human { Name = name, Age = age }, 1);
             }
 
-            var rs = rsb.Build();
+            var rs = rsb.Create();
             Assert.AreEqual(rs.Count, addCount);
         }
 
@@ -31,7 +31,7 @@ namespace UtilityTester
         public void PickThrowTest()
         {
             var rsb = new RandomSelectorBuilder<Human>(0);
-            var rs = rsb.Build();
+            var rs = rsb.Create();
             bool exception = false;
             try
             {
@@ -58,7 +58,7 @@ namespace UtilityTester
                 rsb.Add(new Human { Name = name, Age = age }, 1);
             }
 
-            var rs1 = rsb.Build();
+            var rs1 = rsb.Create();
             var rs2 = new RandomSelector<Human>(rs1);
             Assert.AreEqual(rs1.Count, rs2.Count);
 
@@ -86,7 +86,7 @@ namespace UtilityTester
             rsb.Add(list[1], 25);
             rsb.Add(list[2], 25);
 
-            var rs = rsb.Build();
+            var rs = rsb.Create();
             int getCount = 100000;
             var dic = new Dictionary<Human, int>();
             for (int i = 0; i < getCount; ++i)
@@ -141,7 +141,7 @@ namespace UtilityTester
                 rsb.Add(list[1], 25);
                 rsb.Add(list[2], 25);
 
-                var rs = rsb.Build();
+                var rs = rsb.Create();
                 var pickedItem = rs.Pick();
 
                 int getCount = 100000;
