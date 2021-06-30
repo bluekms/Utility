@@ -8,6 +8,8 @@ namespace UtilityTester
     [TestClass]
     public class RandomSelectorTester
     {
+        private const double ProbabilitySensitivity = 0.005D;
+
         [TestMethod]
         public void AddTest()
         {
