@@ -16,7 +16,7 @@ namespace UtilityPlayground
                 rsb.Add(GameUnit.Paper, 25);
                 rsb.Add(GameUnit.Scissors, 25);
 
-                var rs = rsb.Build();
+                var rs = rsb.Create();
                 var pickedItem = rs.Pick();
 
                 int getCount = 100000;

@@ -21,7 +21,7 @@ namespace UtilityTester
                 rsb.Add(i, 1);
             }
 
-            var rs = rsb.Build();
+            var rs = rsb.Create();
             Assert.AreEqual(rs.Count, addCount);
         }
 
@@ -29,7 +29,7 @@ namespace UtilityTester
         public void PickThrowTest()
         {
             var rsb = new RandomSelectorBuilder<int>(0);
-            var rs = rsb.Build();
+            var rs = rsb.Create();
             bool exception = false;
             try
             {
@@ -53,7 +53,7 @@ namespace UtilityTester
                 rsb.Add(i, 1);
             }
 
-            var rs1 = rsb.Build();
+            var rs1 = rsb.Create();
             var rs2 = new RandomSelector<int>(rs1);
             Assert.AreEqual(rs1.Count, rs2.Count);
 
@@ -74,7 +74,7 @@ namespace UtilityTester
             rsb.Add(GameUnit.Paper, 25);
             rsb.Add(GameUnit.Scissors, 25);
 
-            var rs = rsb.Build();
+            var rs = rsb.Create();
             int getCount = 100000;
             var dic = new Dictionary<GameUnit, int>();
             for (int i = 0; i < getCount; ++i)
@@ -122,7 +122,7 @@ namespace UtilityTester
                 rsb.Add(GameUnit.Paper, 25);
                 rsb.Add(GameUnit.Scissors, 25);
 
-                var rs = rsb.Build();
+                var rs = rsb.Create();
                 var pickedItem = rs.Pick();
 
                 int getCount = 100000;
