@@ -14,12 +14,12 @@ namespace UtilityPlayground
             public int Samples { get; set; }
             public int N { get; set; }
 
-            private readonly Random random = new ();
-            private List<T> items = new ();
-            private List<double> weights = new ();
-            private List<double> weightCumulations = new ();
+            private readonly Random random = new Random();
+            private List<T> items = new List<T>();
+            private List<double> weights = new List<double>();
+            private List<double> weightCumulations = new List<double>();
             private int pickedCount;
-            private List<bool> picked = new ();
+            private List<bool> picked = new List<bool>();
 
             public Picker(IEnumerable<(T Item, double Weight)> pairs)
             {
