@@ -11,10 +11,10 @@ namespace Utility
 
         public int Count => itemList.Count;
 
-        internal RandomSelector(Random r, List<T> itemList, IReadOnlyList<double> ratioList)
+        internal RandomSelector(IReadOnlyList<T> itemList, IReadOnlyList<double> ratioList)
         {
-            rand = r;
-            this.itemList = itemList;
+            rand = new Random();
+            this.itemList = new(itemList);
 
             ratioSumList = new List<double>();
             for (int i = 0; i < ratioList.Count; ++i)

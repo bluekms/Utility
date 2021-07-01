@@ -5,20 +5,17 @@ namespace Utility
 {
     public class RandomSelectorBuilder<T>
     {
-        private readonly Random rand;
         private readonly List<T> itemList;
         private readonly List<double> ratioList;
 
-        public RandomSelectorBuilder(Random useGlobalRand = null)
+        public RandomSelectorBuilder()
         {
-            rand = useGlobalRand;
             itemList = new List<T>();
             ratioList = new List<double>();
         }
 
-        public RandomSelectorBuilder(int capacity, Random useGlobalRand = null)
+        public RandomSelectorBuilder(int capacity)
         {
-            rand = useGlobalRand;
             itemList = new List<T>(capacity);
             ratioList = new List<double>(capacity);
         }
@@ -44,7 +41,7 @@ namespace Utility
 
         public RandomSelector<T> Create()
         {
-            return new(rand ?? new Random(), new List<T>(itemList), ratioList);
+            return new(itemList, ratioList);
         }
     }
 }
