@@ -1,8 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using Utility;
-using UtilityTester;
 
 namespace UtilityPlayground
 {
@@ -16,12 +14,12 @@ namespace UtilityPlayground
             public int Samples { get; set; }
             public int N { get; set; }
 
-            private readonly Random random = new();
-            private List<T> items = new();
-            private List<double> weights = new();
-            private List<double> weightCumulations = new();
-            private int pickedCount = 0;
-            private List<bool> picked = new();
+            private readonly Random random = new ();
+            private List<T> items = new ();
+            private List<double> weights = new ();
+            private List<double> weightCumulations = new ();
+            private int pickedCount;
+            private List<bool> picked = new ();
 
             public Picker(IEnumerable<(T Item, double Weight)> pairs)
             {
@@ -46,8 +44,10 @@ namespace UtilityPlayground
                     {
                         Cleanup();
                     }
+
                     i = GetRandomIndex();
                 }
+
                 picked[i] = true;
                 pickedCount++;
                 return items[i];
@@ -59,6 +59,7 @@ namespace UtilityPlayground
                 Cleanup();
                 return items[i];
             }
+
             private int GetRandomIndex()
             {
                 Samples++;
