@@ -15,25 +15,25 @@ namespace UtilityTester
         {
             int addCount = 100;
 
-            var rsb = new RandomSelectorBuilder<int>(addCount);
+            var rsBuilder = new RandomSelectorBuilder<int>(addCount);
             for (int i = 0; i < addCount; ++i)
             {
-                rsb.Add(i, 1);
+                rsBuilder.Add(i, 1);
             }
 
-            var rs = rsb.Create();
+            var rs = rsBuilder.Create();
             Assert.AreEqual(rs.Count, addCount);
         }
 
         [TestMethod]
         public void PickThrowTest()
         {
-            var rsb = new RandomSelectorBuilder<int>(0);
-            var rs = rsb.Create();
+            var rsBuilder = new RandomSelectorBuilder<int>(0);
+            var rPicker = rsBuilder.CreatePicker();
             bool exception = false;
             try
             {
-                rs.Pick();
+                rPicker.Pick();
             }
             catch
             {
@@ -44,42 +44,19 @@ namespace UtilityTester
         }
 
         [TestMethod]
-        public void DeepCopyPickTest()
-        {
-            int addCount = 100;
-            var rsb = new RandomSelectorBuilder<int>(addCount);
-            for (int i = 0; i < addCount; ++i)
-            {
-                rsb.Add(i, 1);
-            }
-
-            var rs1 = rsb.Create();
-            var rs2 = new RandomSelector<int>(rs1);
-            Assert.AreEqual(rs1.Count, rs2.Count);
-
-            for (int i = 0; i < addCount / 2; ++i)
-            {
-                rs2.Pick();
-            }
-
-            Assert.AreNotEqual(rs1.Count, rs2.Count);
-            Assert.AreEqual(rs2.Count, addCount / 2);
-        }
-
-        [TestMethod]
         public void ProbabilityTest()
         {
-            var rsb = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
-            rsb.Add(GameUnit.Rock, 50);
-            rsb.Add(GameUnit.Paper, 25);
-            rsb.Add(GameUnit.Scissors, 25);
+            var rsBuilder = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
+            rsBuilder.Add(GameUnit.Rock, 50);
+            rsBuilder.Add(GameUnit.Paper, 25);
+            rsBuilder.Add(GameUnit.Scissors, 25);
 
-            var rs = rsb.Create();
+            var rSelector = rsBuilder.Create();
             int getCount = 100000;
             var dic = new Dictionary<GameUnit, int>();
             for (int i = 0; i < getCount; ++i)
             {
-                var item = rs.Get();
+                var item = rSelector.Get();
                 if (dic.ContainsKey(item))
                 {
                     ++dic[item];
@@ -115,21 +92,19 @@ namespace UtilityTester
         [TestMethod]
         public void PickProbabilityTest()
         {
-            for (int l = 0; l < 10; ++l)
+            for (int i = 0; i < 10; ++i)
             {
-                var rsb = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
-                rsb.Add(GameUnit.Rock, 50);
-                rsb.Add(GameUnit.Paper, 25);
-                rsb.Add(GameUnit.Scissors, 25);
-
-                var rs = rsb.Create();
-                var pickedItem = rs.Pick();
+                var rsBuilder = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
+                rsBuilder.Add(GameUnit.Rock, 50);
+                rsBuilder.Add(GameUnit.Paper, 25);
+                rsBuilder.Add(GameUnit.Scissors, 25);
 
                 int getCount = 100000;
                 var dic = new Dictionary<GameUnit, int>();
-                for (int i = 0; i < getCount; ++i)
+                for (int j = 0; j < getCount; ++j)
                 {
-                    var item = rs.Get();
+                    var rPicker = rsBuilder.CreatePicker();
+                    var item = rPicker.Pick();
                     if (dic.ContainsKey(item))
                     {
                         ++dic[item];
@@ -148,47 +123,11 @@ namespace UtilityTester
                     }
 
                     double srcProb = 0;
-                    switch (pickedItem)
+                    switch (key)
                     {
-                        case GameUnit.Rock:
-                            {
-                                switch (key)
-                                {
-                                    case GameUnit.Rock: Assert.Fail(); return;
-                                    case GameUnit.Paper: srcProb = 0.5; break;
-                                    case GameUnit.Scissors: srcProb = 0.5; break;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        case GameUnit.Paper:
-                            {
-                                switch (key)
-                                {
-                                    case GameUnit.Rock: srcProb = 2 / 3D; break;
-                                    case GameUnit.Paper: Assert.Fail(); return;
-                                    case GameUnit.Scissors: srcProb = 1 / 3D; break;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        case GameUnit.Scissors:
-                            {
-                                switch (key)
-                                {
-                                    case GameUnit.Rock: srcProb = 2 / 3D; break;
-                                    case GameUnit.Paper: srcProb = 1 / 3D; break;
-                                    case GameUnit.Scissors: Assert.Fail(); return;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
+                        case GameUnit.Rock: srcProb = 0.5; break;
+                        case GameUnit.Paper: srcProb = 0.25; break;
+                        case GameUnit.Scissors: srcProb = 0.25; break;
                         default:
                             break;
                     }

@@ -15,27 +15,27 @@ namespace UtilityTester
         {
             int addCount = 100;
             var ageRand = new Random();
-            var rsb = new RandomSelectorBuilder<Human>(addCount);
+            var rsBuilder = new RandomSelectorBuilder<Human>(addCount);
             for (int i = 0; i < addCount; ++i)
             {
                 string name = $"{Guid.NewGuid().ToString().Substring(0, 3)}_{i}";
                 int age = ageRand.Next(0, 100);
-                rsb.Add(new Human { Name = name, Age = age }, 1);
+                rsBuilder.Add(new Human { Name = name, Age = age }, 1);
             }
 
-            var rs = rsb.Create();
+            var rs = rsBuilder.Create();
             Assert.AreEqual(rs.Count, addCount);
         }
 
         [TestMethod]
         public void PickThrowTest()
         {
-            var rsb = new RandomSelectorBuilder<Human>(0);
-            var rs = rsb.Create();
+            var rsBuilder = new RandomSelectorBuilder<Human>(0);
+            var rPicker = rsBuilder.CreatePicker();
             bool exception = false;
             try
             {
-                rs.Pick();
+                rPicker.Pick();
             }
             catch
             {
@@ -43,32 +43,6 @@ namespace UtilityTester
             }
 
             Assert.IsTrue(exception);
-        }
-
-        [TestMethod]
-        public void DeepCopyPickTest()
-        {
-            int addCount = 100;
-            var ageRand = new Random();
-            var rsb = new RandomSelectorBuilder<Human>(addCount);
-            for (int i = 0; i < addCount; ++i)
-            {
-                string name = $"{Guid.NewGuid().ToString().Substring(0, 3)}_{i}";
-                int age = ageRand.Next(0, 100);
-                rsb.Add(new Human { Name = name, Age = age }, 1);
-            }
-
-            var rs1 = rsb.Create();
-            var rs2 = new RandomSelector<Human>(rs1);
-            Assert.AreEqual(rs1.Count, rs2.Count);
-
-            for (int i = 0; i < addCount / 2; ++i)
-            {
-                rs2.Pick();
-            }
-
-            Assert.AreNotEqual(rs1.Count, rs2.Count);
-            Assert.AreEqual(rs2.Count, addCount / 2);
         }
 
         [TestMethod]
@@ -81,17 +55,17 @@ namespace UtilityTester
                 new Human { Name = "CCC", Age = 40 },
             };
 
-            var rsb = new RandomSelectorBuilder<Human>(3);
-            rsb.Add(list[0], 50);
-            rsb.Add(list[1], 25);
-            rsb.Add(list[2], 25);
+            var rsBuilder = new RandomSelectorBuilder<Human>(3);
+            rsBuilder.Add(list[0], 50);
+            rsBuilder.Add(list[1], 25);
+            rsBuilder.Add(list[2], 25);
 
-            var rs = rsb.Create();
+            var rSelector = rsBuilder.Create();
             int getCount = 100000;
             var dic = new Dictionary<Human, int>();
             for (int i = 0; i < getCount; ++i)
             {
-                var item = rs.Get();
+                var item = rSelector.Get();
                 if (dic.ContainsKey(item))
                 {
                     ++dic[item];
@@ -136,19 +110,17 @@ namespace UtilityTester
 
             for (int l = 0; l < 10; ++l)
             {
-                var rsb = new RandomSelectorBuilder<Human>(3);
-                rsb.Add(list[0], 50);
-                rsb.Add(list[1], 25);
-                rsb.Add(list[2], 25);
-
-                var rs = rsb.Create();
-                var pickedItem = rs.Pick();
+                var rsBuilder = new RandomSelectorBuilder<Human>(3);
+                rsBuilder.Add(list[0], 50);
+                rsBuilder.Add(list[1], 25);
+                rsBuilder.Add(list[2], 25);
 
                 int getCount = 100000;
                 var dic = new Dictionary<Human, int>();
                 for (int i = 0; i < getCount; ++i)
                 {
-                    var item = rs.Get();
+                    var rPicker = rsBuilder.CreatePicker();
+                    var item = rPicker.Pick();
                     if (dic.ContainsKey(item))
                     {
                         ++dic[item];
@@ -167,47 +139,11 @@ namespace UtilityTester
                     }
 
                     double srcProb = 0;
-                    switch (pickedItem.Name)
+                    switch (key.Name)
                     {
-                        case "AAA":
-                            {
-                                switch (key.Name)
-                                {
-                                    case "AAA": Assert.Fail(); return;
-                                    case "BBB": srcProb = 0.5; break;
-                                    case "CCC": srcProb = 0.5; break;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        case "BBB":
-                            {
-                                switch (key.Name)
-                                {
-                                    case "AAA": srcProb = 2 / 3D; break;
-                                    case "BBB": Assert.Fail(); return;
-                                    case "CCC": srcProb = 1 / 3D; break;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        case "CCC":
-                            {
-                                switch (key.Name)
-                                {
-                                    case "AAA": srcProb = 2 / 3D; break;
-                                    case "BBB": srcProb = 1 / 3D; break;
-                                    case "CCC": Assert.Fail(); return;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
+                        case "AAA": srcProb = 0.5; break;
+                        case "BBB": srcProb = 0.25; break;
+                        case "CCC": srcProb = 0.25; break;
                         default:
                             break;
                     }

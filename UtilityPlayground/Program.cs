@@ -11,13 +11,14 @@ namespace UtilityPlayground
         {
             for (int l = 0; l < 10; ++l)
             {
-                var rsb = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
-                rsb.Add(GameUnit.Rock, 50);
-                rsb.Add(GameUnit.Paper, 25);
-                rsb.Add(GameUnit.Scissors, 25);
+                var rsBuilder = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
+                rsBuilder.Add(GameUnit.Rock, 50);
+                rsBuilder.Add(GameUnit.Paper, 25);
+                rsBuilder.Add(GameUnit.Scissors, 25);
 
-                var rs = rsb.Create();
-                var pickedItem = rs.Pick();
+                var rs = rsBuilder.Create();
+                var rPicker = rsBuilder.CreatePicker();
+                var pickedItem = rPicker.Pick();
 
                 int getCount = 100000;
                 var dic = new Dictionary<GameUnit, int>();
@@ -89,7 +90,7 @@ namespace UtilityPlayground
 
                     double currProb = dic[key] / (double)getCount;
                     double diff = Math.Abs(srcProb - currProb);
-                    Console.WriteLine($"{l}Â÷½Ã. Pick: {pickedItem.ToString().Substring(0, 1)}, Key: {key.ToString().Substring(0, 1)}, Count: {dic[key]}, Result: {diff < 0.005}");
+                    Console.WriteLine($"{l}ì°¨ì‹œ. Pick: {pickedItem.ToString().Substring(0, 1)}, Key: {key.ToString().Substring(0, 1)}, Count: {dic[key]}, Result: {diff < 0.005}");
                 }
             }
         }
