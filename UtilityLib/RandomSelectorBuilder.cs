@@ -5,57 +5,57 @@ namespace Utility
 {
     public class RandomSelectorBuilder<T>
     {
-        private readonly List<T> itemList;
-        private readonly List<double> ratioList;
+        private readonly List<T> items;
+        private readonly List<double> weights;
         private bool isCreated;
 
         public RandomSelectorBuilder()
         {
             isCreated = false;
-            itemList = new List<T>();
-            ratioList = new List<double>();
+            items = new List<T>();
+            weights = new List<double>();
         }
 
         public RandomSelectorBuilder(int capacity)
         {
-            itemList = new List<T>(capacity);
-            ratioList = new List<double>(capacity);
+            items = new List<T>(capacity);
+            weights = new List<double>(capacity);
         }
 
-        public void Add(T item, double ratio)
+        public void Add(T item, double weight)
         {
             if (isCreated)
             {
                 throw new InvalidOperationException("Already Created");
             }
 
-            if (ratio < 0)
+            if (weight < 0)
             {
                 return;
             }
 
-            int index = itemList.IndexOf(item);
+            int index = items.IndexOf(item);
             if (index < 0)
             {
-                itemList.Add(item);
-                ratioList.Add(ratio);
+                items.Add(item);
+                weights.Add(weight);
             }
             else
             {
-                ratioList[index] += ratio;
+                weights[index] += weight;
             }
         }
 
         public RandomSelector<T> Create()
         {
             isCreated = true;
-            return new RandomSelector<T>(itemList, ratioList);
+            return new RandomSelector<T>(items, weights);
         }
 
         public RandomPicker<T> CreatePicker()
         {
             isCreated = true;
-            return new RandomPicker<T>(itemList, ratioList);
+            return new RandomPicker<T>(items, weights);
         }
     }
 }
