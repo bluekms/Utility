@@ -5,67 +5,63 @@ namespace Utility
 {
     public class RandomPicker<T>
     {
-        private readonly Random rand;
-        private readonly List<T> itemList;
-        private readonly List<double> ratioSumList;
+        private readonly Random random;
+        private readonly List<T> items;
+        private readonly List<double> weightCumulations;
 
-        public int Count => itemList.Count;
+        public int Count => items.Count;
 
-        internal RandomPicker(IReadOnlyList<T> itemList, IReadOnlyList<double> ratioList)
+        internal RandomPicker(IReadOnlyList<T> items, IReadOnlyList<double> weights)
         {
-            rand = new Random();
-            this.itemList = new(itemList);
+            random = new Random();
+            this.items = new(items);
 
-            ratioSumList = new List<double>();
-            for (int i = 0; i < ratioList.Count; ++i)
+            var cumulation = 0D;
+            weightCumulations = new List<double>();
+            for (int i = 0; i < weights.Count; ++i)
             {
-                double sum = ratioList[i];
-                for (int j = 0; j < i; ++j)
-                {
-                    sum += ratioList[j];
-                }
-
-                ratioSumList.Add(sum);
+                cumulation += weights[i];
+                weightCumulations.Add(cumulation);
             }
         }
 
         public T Pick()
         {
-            if (itemList.Count == 0)
+            if (items.Count == 0)
             {
                 throw new InvalidOperationException("Item Empty");
             }
 
             int index = GetRandomIndex();
-            var item = itemList[index];
+            var item = items[index];
 
             double ratio;
             if (index == 0)
             {
-                ratio = ratioSumList[index];
+                ratio = weightCumulations[index];
             }
             else
             {
-                ratio = ratioSumList[index] - ratioSumList[index - 1];
+                ratio = weightCumulations[index] - weightCumulations[index - 1];
             }
 
-            for (int i = index; i < ratioSumList.Count; ++i)
+            for (int i = index; i < weightCumulations.Count; ++i)
             {
-                ratioSumList[i] -= ratio;
+                weightCumulations[i] -= ratio;
             }
 
-            itemList.RemoveAt(index);
-            ratioSumList.RemoveAt(index);
+            items.RemoveAt(index);
+            weightCumulations.RemoveAt(index);
 
             return item;
         }
 
         private int GetRandomIndex()
         {
-            double value = rand.NextDouble() * ratioSumList[^1];
+            double value = random.NextDouble() * weightCumulations[^1];
 
             // ref: https://docs.microsoft.com/ko-kr/dotnet/api/system.collections.generic.list-1.binarysearch?view=net-5.0
-            int index = ratioSumList.BinarySearch(value);
+            int index = weightCumulations.BinarySearch(value);
             if (index < 0)
             {
                 return ~index;

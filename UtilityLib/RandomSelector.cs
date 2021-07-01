@@ -5,46 +5,42 @@ namespace Utility
 {
     public class RandomSelector<T>
     {
-        private readonly Random rand;
-        private readonly List<T> itemList;
-        private readonly List<double> ratioSumList;
+        private readonly Random random;
+        private readonly List<T> items;
+        private readonly List<double> weightCumulations;
 
-        public int Count => itemList.Count;
+        public int Count => items.Count;
 
-        internal RandomSelector(IReadOnlyList<T> itemList, IReadOnlyList<double> ratioList)
+        internal RandomSelector(IReadOnlyList<T> items, IReadOnlyList<double> weights)
         {
-            rand = new Random();
-            this.itemList = new(itemList);
+            random = new Random();
+            this.items = new(items);
 
-            ratioSumList = new List<double>();
-            for (int i = 0; i < ratioList.Count; ++i)
+            var cumulation = 0D;
+            weightCumulations = new List<double>();
+            for (int i = 0; i < weights.Count; ++i)
             {
-                double sum = ratioList[i];
-                for (int j = 0; j < i; ++j)
-                {
-                    sum += ratioList[j];
-                }
-
-                ratioSumList.Add(sum);
+                cumulation += weights[i];
+                weightCumulations.Add(cumulation);
             }
         }
 
         public T Get()
         {
-            if (itemList.Count == 0)
+            if (items.Count == 0)
             {
                 throw new InvalidOperationException("Item Empty");
             }
 
-            return itemList[GetRandomIndex()];
+            return items[GetRandomIndex()];
         }
 
         private int GetRandomIndex()
         {
-            double value = rand.NextDouble() * ratioSumList[^1];
+            double value = random.NextDouble() * weightCumulations[^1];
 
             // ref: https://docs.microsoft.com/ko-kr/dotnet/api/system.collections.generic.list-1.binarysearch?view=net-5.0
-            int index = ratioSumList.BinarySearch(value);
+            int index = weightCumulations.BinarySearch(value);
             if (index < 0)
             {
                 return ~index;
