@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Utility;
 using UtilityTester;
 
@@ -7,91 +8,190 @@ namespace UtilityPlayground
 {
     internal class Program
     {
-        private static void Main()
+        public sealed class Picker<T>
         {
-            for (int l = 0; l < 10; ++l)
+            private const int MaxRetries = 2;
+            private const int CleanupTriggerDenominator = 4;
+
+            public int Samples { get; set; }
+            public int N { get; set; }
+
+            private readonly Random random = new();
+            private List<T> items = new();
+            private List<double> weights = new();
+            private List<double> weightCumulations = new();
+            private int pickedCount = 0;
+            private List<bool> picked = new();
+
+            public Picker(IEnumerable<(T Item, double Weight)> pairs)
             {
-                var rsBuilder = new RandomSelectorBuilder<GameUnit>((int)GameUnit.End);
-                rsBuilder.Add(GameUnit.Rock, 50);
-                rsBuilder.Add(GameUnit.Paper, 25);
-                rsBuilder.Add(GameUnit.Scissors, 25);
-
-                var rs = rsBuilder.Create();
-                var rPicker = rsBuilder.CreatePicker();
-                var pickedItem = rPicker.Pick();
-
-                int getCount = 100000;
-                var dic = new Dictionary<GameUnit, int>();
-                for (int i = 0; i < getCount; ++i)
+                var cumulation = 0.0;
+                foreach (var (item, weight) in pairs)
                 {
-                    var item = rs.Get();
-                    if (dic.ContainsKey(item))
+                    cumulation += weight;
+                    items.Add(item);
+                    weights.Add(weight);
+                    weightCumulations.Add(cumulation);
+                    picked.Add(false);
+                }
+            }
+
+            public T PickOn()
+            {
+                var i = GetRandomIndex();
+                var count = 0;
+                while (picked[i])
+                {
+                    if (++count == MaxRetries || pickedCount > items.Count / CleanupTriggerDenominator)
                     {
-                        ++dic[item];
+                        Cleanup();
                     }
-                    else
-                    {
-                        dic.Add(item, 1);
-                    }
+                    i = GetRandomIndex();
+                }
+                picked[i] = true;
+                pickedCount++;
+                return items[i];
+            }
+
+            public T PickOn2()
+            {
+                var i = GetRandomIndex();
+                Cleanup();
+                return items[i];
+            }
+            private int GetRandomIndex()
+            {
+                Samples++;
+                var r = random.NextDouble() * weightCumulations[^1];
+                var i = weightCumulations.BinarySearch(r);
+                if (i < 0)
+                {
+                    return ~i;
+                }
+                else
+                {
+                    return i;
+                }
+            }
+
+            public T PickOn3()
+            {
+                if (items.Count == 0)
+                {
+                    throw new InvalidOperationException("Item Empty");
                 }
 
-                for (var key = GameUnit.Rock; key < GameUnit.End; ++key)
+                int index = GetRandomIndex();
+                var item = items[index];
+
+                double ratio;
+                if (index == 0)
                 {
-                    if (!dic.ContainsKey(key))
-                    {
-                        continue;
-                    }
-
-                    double srcProb = 0;
-                    switch (pickedItem)
-                    {
-                        case GameUnit.Rock:
-                            {
-                                switch (key)
-                                {
-                                    case GameUnit.Rock: Console.WriteLine("ERROR"); return;
-                                    case GameUnit.Paper: srcProb = 0.5; break;
-                                    case GameUnit.Scissors: srcProb = 0.5; break;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        case GameUnit.Paper:
-                            {
-                                switch (key)
-                                {
-                                    case GameUnit.Rock: srcProb = 2 / 3D; break;
-                                    case GameUnit.Paper: Console.WriteLine("ERROR"); return;
-                                    case GameUnit.Scissors: srcProb = 1 / 3D; break;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        case GameUnit.Scissors:
-                            {
-                                switch (key)
-                                {
-                                    case GameUnit.Rock: srcProb = 2 / 3D; break;
-                                    case GameUnit.Paper: srcProb = 1 / 3D; break;
-                                    case GameUnit.Scissors: Console.WriteLine("ERROR"); return;
-                                    default: break;
-                                }
-                            }
-
-                            break;
-
-                        default:
-                            break;
-                    }
-
-                    double currProb = dic[key] / (double)getCount;
-                    double diff = Math.Abs(srcProb - currProb);
-                    Console.WriteLine($"{l}차시. Pick: {pickedItem.ToString().Substring(0, 1)}, Key: {key.ToString().Substring(0, 1)}, Count: {dic[key]}, Result: {diff < 0.005}");
+                    ratio = weightCumulations[index];
                 }
+                else
+                {
+                    ratio = weightCumulations[index] - weightCumulations[index - 1];
+                }
+
+                for (int i = index; i < items.Count; ++i)
+                {
+                    weightCumulations[i] -= ratio;
+                }
+
+                items.RemoveAt(index);
+                weightCumulations.RemoveAt(index);
+
+                return item;
+            }
+
+            private void Cleanup()
+            {
+                var newItems = new List<T>();
+                var newWeights = new List<double>();
+                var newWeightCumulations = new List<double>();
+                var newPicked = new List<bool>();
+
+                var cumulation = 0.0;
+                for (var i = 0; i < items.Count; i++)
+                {
+                    N++;
+                    var item = items[i];
+                    var weight = weights[i];
+                    cumulation += weight;
+                    newItems.Add(item);
+                    newWeights.Add(weight);
+                    newWeightCumulations.Add(cumulation);
+                    newPicked.Add(false);
+                }
+
+                items = newItems;
+                weights = newWeights;
+                weightCumulations = newWeightCumulations;
+                picked = newPicked;
+                pickedCount = 0;
+            }
+        }
+
+        public static void Main()
+        {
+            var dic = new Dictionary<string, List<double>>();
+            dic.Add("Pick1", new List<double>());
+            dic.Add("Pick2", new List<double>());
+            dic.Add("Pick3", new List<double>());
+
+            for (int j = 0; j < 10; ++j)
+            {
+                var picker = new Picker<int>(Enumerable.Range(0, 100).Select(x => (x, 1.0)));
+
+                var startDt = DateTime.Now;
+                for (var i = 0; i < 100; i++)
+                {
+                    picker.PickOn();
+                }
+
+                var elapsed = (DateTime.Now - startDt).TotalMilliseconds;
+                dic["Pick1"].Add(elapsed);
+
+                Console.WriteLine($"pick1: Elapsed: {elapsed} ms");
+                Console.WriteLine("GetRandomIndex: {0}", picker.Samples);
+                Console.WriteLine("N: {0}", picker.N);
+
+                var picker2 = new Picker<int>(Enumerable.Range(0, 100).Select(x => (x, 1.0)));
+
+                startDt = DateTime.Now;
+                for (var i = 0; i < 100; i++)
+                {
+                    picker2.PickOn2();
+                }
+
+                elapsed = (DateTime.Now - startDt).TotalMilliseconds;
+                dic["Pick2"].Add(elapsed);
+
+                Console.WriteLine($"pick1: Elapsed: {elapsed} ms");
+                Console.WriteLine("GetRandomIndex: {0}", picker2.Samples);
+                Console.WriteLine("N: {0}", picker2.N);
+
+                var picker3 = new Picker<int>(Enumerable.Range(0, 100).Select(x => (x, 1.0)));
+
+                startDt = DateTime.Now;
+                for (var i = 0; i < 100; i++)
+                {
+                    picker3.PickOn3();
+                }
+
+                elapsed = (DateTime.Now - startDt).TotalMilliseconds;
+                dic["Pick3"].Add(elapsed);
+
+                Console.WriteLine($"pick1: Elapsed: {elapsed} ms");
+                Console.WriteLine("GetRandomIndex: {0}", picker3.Samples);
+                Console.WriteLine("N: {0}", picker3.N);
+            }
+
+            Console.WriteLine("=== fin ===");
+            foreach (var pair in dic)
+            {
+                Console.WriteLine($"{pair.Key}: {Math.Round(pair.Value.Average(), 6)} ms");
             }
         }
     }
