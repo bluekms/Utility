@@ -31,7 +31,7 @@ namespace Utility
 
             if (weight < 0)
             {
-                return;
+                throw new ArgumentException("Weight must be bigger than zero");
             }
 
             int index = items.IndexOf(item);
