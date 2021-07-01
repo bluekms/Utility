@@ -7,9 +7,11 @@ namespace Utility
     {
         private readonly List<T> itemList;
         private readonly List<double> ratioList;
+        private bool isCreated;
 
         public RandomSelectorBuilder()
         {
+            isCreated = false;
             itemList = new List<T>();
             ratioList = new List<double>();
         }
@@ -22,6 +24,11 @@ namespace Utility
 
         public void Add(T item, double ratio)
         {
+            if (isCreated)
+            {
+                throw new InvalidOperationException("Already Created");
+            }
+
             if (ratio < 0)
             {
                 return;
@@ -41,6 +48,7 @@ namespace Utility
 
         public RandomSelector<T> Create()
         {
+            isCreated = true;
             return new(itemList, ratioList);
         }
     }
