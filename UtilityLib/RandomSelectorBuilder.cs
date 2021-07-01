@@ -49,7 +49,13 @@ namespace Utility
         public RandomSelector<T> Create()
         {
             isCreated = true;
-            return new(itemList, ratioList);
+            return new RandomSelector<T>(itemList, ratioList);
+        }
+
+        public RandomPicker<T> CreatePicker()
+        {
+            isCreated = true;
+            return new RandomPicker<T>(itemList, ratioList);
         }
     }
 }

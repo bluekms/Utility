@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace Utility
 {
-    public class RandomSelector<T>
+    public class RandomPicker<T>
     {
         private readonly Random rand;
         private readonly List<T> itemList;
@@ -11,7 +11,7 @@ namespace Utility
 
         public int Count => itemList.Count;
 
-        internal RandomSelector(IReadOnlyList<T> itemList, IReadOnlyList<double> ratioList)
+        internal RandomPicker(IReadOnlyList<T> itemList, IReadOnlyList<double> ratioList)
         {
             rand = new Random();
             this.itemList = new(itemList);
@@ -29,14 +29,35 @@ namespace Utility
             }
         }
 
-        public T Get()
+        public T Pick()
         {
             if (itemList.Count == 0)
             {
                 throw new InvalidOperationException("Item Empty");
             }
 
-            return itemList[GetRandomIndex()];
+            int index = GetRandomIndex();
+            var item = itemList[index];
+
+            double ratio;
+            if (index == 0)
+            {
+                ratio = ratioSumList[index];
+            }
+            else
+            {
+                ratio = ratioSumList[index] - ratioSumList[index - 1];
+            }
+
+            for (int i = index; i < ratioSumList.Count; ++i)
+            {
+                ratioSumList[i] -= ratio;
+            }
+
+            itemList.RemoveAt(index);
+            ratioSumList.RemoveAt(index);
+
+            return item;
         }
 
         private int GetRandomIndex()
