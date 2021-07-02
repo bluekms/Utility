@@ -29,12 +29,12 @@ namespace Utility
 
             if (weight < 0)
             {
-                throw new ArgumentException("Weight must be bigger than zero");
+                throw new ArgumentException($"Weight must be bigger than zero. Item: {item}, Weight: {weight}", nameof(weight));
             }
 
             if (!itemWeights.TryAdd(item, weight))
             {
-                throw new ArgumentException($"An item has already been added. Item: {item}, Weight: {weight}");
+                throw new ArgumentException($"An item has already been added. Item: {item}, Weight: {weight}", nameof(item));
             }
         }
 
