@@ -11,17 +11,19 @@ namespace Utility
 
         public int Count => items.Count;
 
-        internal RandomSelector(IReadOnlyList<T> items, IReadOnlyList<double> weights)
+        internal RandomSelector(IReadOnlyDictionary<T, double> itemWeights)
         {
             random = new Random();
-            this.items = new(items);
-
-            var cumulation = 0D;
+            items = new List<T>();
             weightCumulations = new List<double>();
-            for (int i = 0; i < weights.Count; ++i)
+
+            double cumulating = 0D;
+            foreach (var pair in itemWeights)
             {
-                cumulation += weights[i];
-                weightCumulations.Add(cumulation);
+                items.Add(pair.Key);
+
+                cumulating += pair.Value;
+                weightCumulations.Add(cumulating);
             }
         }
 

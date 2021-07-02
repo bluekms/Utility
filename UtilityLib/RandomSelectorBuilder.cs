@@ -5,21 +5,19 @@ namespace Utility
 {
     public class RandomSelectorBuilder<T>
     {
-        private readonly List<T> items;
-        private readonly List<double> weights;
         private bool isCreated;
+        private readonly Dictionary<T, double> itemWeights;
 
         public RandomSelectorBuilder()
         {
             isCreated = false;
-            items = new List<T>();
-            weights = new List<double>();
+            itemWeights = new Dictionary<T, double>();
         }
 
         public RandomSelectorBuilder(int capacity)
         {
-            items = new List<T>(capacity);
-            weights = new List<double>(capacity);
+            isCreated = false;
+            itemWeights = new Dictionary<T, double>(capacity);
         }
 
         public void Add(T item, double weight)
@@ -34,28 +32,22 @@ namespace Utility
                 throw new ArgumentException("Weight must be bigger than zero");
             }
 
-            int index = items.IndexOf(item);
-            if (index < 0)
+            if (!itemWeights.TryAdd(item, weight))
             {
-                items.Add(item);
-                weights.Add(weight);
-            }
-            else
-            {
-                weights[index] += weight;
+                throw new ArgumentException($"An item has already been added. Item: {item}, Weight: {weight}");
             }
         }
 
         public RandomSelector<T> Create()
         {
             isCreated = true;
-            return new RandomSelector<T>(items, weights);
+            return new RandomSelector<T>(itemWeights);
         }
 
         public RandomPicker<T> CreatePicker()
         {
             isCreated = true;
-            return new RandomPicker<T>(items, weights);
+            return new RandomPicker<T>(itemWeights);
         }
     }
 }
