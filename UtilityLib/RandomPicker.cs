@@ -18,11 +18,11 @@ namespace Utility
             weightCumulations = new List<double>();
 
             var cumulating = 0D;
-            foreach (var pair in itemWeights)
+            foreach (var (item, weight) in itemWeights)
             {
-                items.Add(pair.Key);
+                items.Add(item);
 
-                cumulating += pair.Value;
+                cumulating += weight;
                 weightCumulations.Add(cumulating);
             }
         }
