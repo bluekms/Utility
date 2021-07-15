@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using Utility;
+using Utility.RandomSelect;
 
 namespace UtilityTester
 {
